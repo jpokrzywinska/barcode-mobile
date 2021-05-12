@@ -10,8 +10,7 @@ export default function App() {
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
-    // console.info(JSON.parse(data));
+    alert(`Zeskanowano: ${data}`);
     updateScannedData(scannedOrders => scannedOrders.concat(JSON.parse(data)));
   };
 
