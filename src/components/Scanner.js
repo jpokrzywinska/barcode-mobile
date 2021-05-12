@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function Scanner() {
+export default function Scanner({ handleBarCodeScanned, scanned, setScanned }) {
   const [hasPermission, setHasPermission] = useState(null);
-  const [scanned, setScanned] = useState(false);
-  const [scannedData, setScannedData] = useState([]);
+
 
   useEffect(() => {
     (async () => {
@@ -13,12 +13,6 @@ export default function Scanner() {
       setHasPermission(status === 'granted');
     })();
   }, []);
-
-  const handleBarCodeScanned = ({ type, data }) => {
-    setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
-    setScannedData([...scannedData, data]);
-  };
 
   if (hasPermission === null) {
     return <Text>Requesting for camera permission</Text>;
@@ -28,13 +22,14 @@ export default function Scanner() {
   }
 
   return (
-    <View style={styles.container}>
-      <BarCodeScanner style={styles.camera}
+    <SafeAreaView style={styles.container}>
+      <BarCodeScanner style={scanned ? styles.invisibleCamera : styles.visibleCamera}
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
       />
-      {scanned && <Button title={'Skanuj ponownie'} onPress={() => setScanned(false)} />}
-      <Text>{scannedData}</Text>
-    </View>
+      <View>
+        {scanned && <Button title={'Skanuj'} onPress={() =>  setScanned(false)} />}
+      </View>
+    </SafeAreaView>
   );
 
 }
@@ -44,8 +39,14 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
   },
-  camera: {
+  invisibleCamera: {
     position: 'relative',
     height: '100%',
+    // opacity: 1,
   },
+  visibleCamera: {
+    position: 'relative',
+    height: '100%',
+    // opacity: 0.1
+  }
 });
